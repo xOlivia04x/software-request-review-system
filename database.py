@@ -58,3 +58,17 @@ def get_requests():
 if __name__ == '__main__':
     initialize_database()
     print(f'Database initialized: {DB_PATH.name}')
+
+
+def update_request_status(request_id, status):
+    """Update the review status of an existing software request."""
+    allowed = {'Pending', 'In Review', 'Approved', 'Rejected'}
+    if status not in allowed:
+        raise ValueError('Invalid review status.')
+    with connect() as connection:
+        cursor = connection.execute(
+            'UPDATE software_requests SET status = ? WHERE id = ?',
+            (status, request_id)
+        )
+        if cursor.rowcount == 0:
+            raise ValueError('Request not found.')
